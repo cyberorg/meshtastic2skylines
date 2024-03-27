@@ -35,7 +35,7 @@ var userConfig = {
 };
 ```
 
-For more information about Skylines, visit [Skylines GitHub Repository](https://github.com/skylines/aero).
+For more information about Skylines, visit [Skylines GitHub Repository]([https://github.com/skylines/aero](https://github.com/skylines-project/skylines)).
 
 **Dependencies**: This flow utilizes the Meshtastic Node-RED contrib nodes. For installation and usage instructions, refer to [Meshtastic Node-RED contrib](https://flows.nodered.org/node/@meshtastic/node-red-contrib-meshtastic) on Node-RED flows.
 
