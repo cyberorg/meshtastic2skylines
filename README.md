@@ -2,7 +2,7 @@
 
 ## Overview
 
-This Node-RED flow is designed to forward position data to [https://skylines.aero](https://skylines.aero) using data from an MQTT broker. It includes functionalities to ingest data from MQTT, decode the incoming packets, deduplicate packets, and send position measurements to Skylines via HTTP POST requests.
+This Node-RED flow is designed to forward position data to [https://skylines.aero](https://skylines.aero) using data from an MQTT broker using livetrack24 protocol. It includes functionalities to ingest data from MQTT, decode the incoming packets, deduplicate packets, and send position measurements to Skylines via HTTP POST requests.
 
 ## Subflows
 
@@ -44,3 +44,4 @@ For more information about Skylines, visit [Skylines GitHub Repository](https://
 Ensure all necessary dependencies are installed and configured properly in your Node-RED environment.
 
 **Acknowledgement**: Special thanks to ChatGPT for being fantastic!
+#meshtastic #paragliding #skylines #flyxc.app #puretrack.io #livetrack24
