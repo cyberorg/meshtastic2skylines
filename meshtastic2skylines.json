@@ -1,6 +1,98 @@
 [
     {
-        "id": "a832ad4ec196570a",
+        "id": "f586b449f49c3776",
+        "type": "subflow",
+        "name": "Meshtastic2skylines: Position",
+        "info": "",
+        "category": "output",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "29daae96374e6f07"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 500,
+                "y": 80,
+                "wires": [
+                    {
+                        "id": "29daae96374e6f07",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#C0DEED",
+        "inputLabels": [
+            "Position"
+        ],
+        "outputLabels": [
+            "Position Measurement"
+        ],
+        "icon": "node-red-contrib-influxdb/influxdb.png"
+    },
+    {
+        "id": "29daae96374e6f07",
+        "type": "function",
+        "z": "f586b449f49c3776",
+        "name": "Generate Position Measurement",
+        "func": "var payload = msg.payload.packet.decoded.payload\n\n// Check if altitude is less than or equal to -1000 or greater than or equal to 15000\nif (payload.altitude <= -1000 || payload.altitude >= 15000) {\n    payload.altitude = 0; // Set altitude to 0\n}\n\nvar out = [{\n    \"lat\": payload.latitudeI * 1e-7,\n    \"lon\": payload.longitudeI * 1e-7,\n    \"alt\": payload.altitude,\n    \"tm\": payload.time,\n    \"satsInView\": payload.satsInView,\n    \"groundSpeed\": payload.groundSpeed,\n    \"groundTrack\": payload.groundTrack,\n    \"pDOP\": payload.PDOP,\n},\n{\n    \"from\": msg.payload.packet.fromHex,\n    \"fromShortName\": msg.payload.packet.fromShortName,\n    \"fromLongName\": msg.payload.packet.fromLongName,\n    \"fromHardware\": msg.payload.packet.fromHardware,\n    \"to\": msg.payload.packet.toHex,\n    \"toShortName\": msg.payload.packet.toShortName,\n    \"toLongName\": msg.payload.packet.toLongName,\n    \"toHardware\": msg.payload.packet.toHardware,\n    \"channelId\": msg.payload.channelId,\n    \"gatewayId\": msg.payload.gatewayId\n}]\n\nmsg.payload = out\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 230,
+        "y": 40,
+        "wires": [
+            []
+        ],
+        "icon": "font-awesome/fa-location-arrow"
+    },
+    {
+        "id": "a645c6a341179acd",
+        "type": "influxdb out",
+        "z": "f586b449f49c3776",
+        "influxdb": "d96c8f45d69c34f7",
+        "name": "Write Position Measurement",
+        "measurement": "Position",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "organisation",
+        "bucket": "bucket",
+        "x": 520,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "d96c8f45d69c34f7",
+        "type": "influxdb",
+        "hostname": "localhost",
+        "port": "8086",
+        "protocol": "http",
+        "database": "msh",
+        "name": "Local InfluxDB",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "1.x",
+        "url": "http://localhost:8086",
+        "timeout": "",
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "32b8c82937896aec",
         "type": "subflow",
         "name": "Ingest from MQTT",
         "info": "",
@@ -12,7 +104,7 @@
                 "y": 40,
                 "wires": [
                     {
-                        "id": "13c14b6192865d27",
+                        "id": "53fb4a144c235b54",
                         "port": 0
                     }
                 ]
@@ -27,9 +119,9 @@
         "icon": "@meshtastic/node-red-contrib-meshtastic/logo.svg"
     },
     {
-        "id": "4c809ff0174c8ff0",
+        "id": "b61b30ecea6313f5",
         "type": "function",
-        "z": "a832ad4ec196570a",
+        "z": "32b8c82937896aec",
         "name": "Translate Node Identifiers to Hex",
         "func": "msg.payload.packet.toHex = '!' + msg.payload.packet.to.toString(16).padStart(8,0)\nmsg.payload.packet.fromHex = '!' + msg.payload.packet.from.toString(16).padStart(8, 0)\nreturn msg;",
         "outputs": 1,
@@ -41,17 +133,17 @@
         "y": 40,
         "wires": [
             [
-                "13c14b6192865d27"
+                "53fb4a144c235b54"
             ]
         ]
     },
     {
-        "id": "938a1c3c0bdbd155",
+        "id": "704a19cb66081dd2",
         "type": "mqtt in",
-        "z": "a832ad4ec196570a",
+        "z": "32b8c82937896aec",
         "name": "Injest from MQTT",
         "topic": "#",
-        "qos": "2",
+        "qos": "1",
         "datatype": "auto-detect",
         "broker": "420f8f88e8060b71",
         "nl": false,
@@ -62,15 +154,14 @@
         "y": 40,
         "wires": [
             [
-                "1ed79fa8cae54ee4",
-                "6eefeb1110ba7270"
+                "40a7c7010eafaf05"
             ]
         ]
     },
     {
-        "id": "13c14b6192865d27",
+        "id": "53fb4a144c235b54",
         "type": "function",
-        "z": "a832ad4ec196570a",
+        "z": "32b8c82937896aec",
         "name": "Inject Node Names and Hardware",
         "func": "var nodeShortNames = global.get('nodeShortNames')\nvar nodeLongNames = global.get('nodeLongNames')\nvar nodeHardware = global.get('nodeHardware')\n\nif (nodeShortNames === undefined) nodeShortNames = {}\nif (nodeLongNames === undefined) nodeLongNames = {}\nif (nodeHardware === undefined) nodeHardware = {}\n\nvar packet = msg.payload.packet\n\nvar unknown = \"unknown\"\n\nvar hardwareMap = {\n    0: \"UNSET\",\n    1: \"TLORA_V2\",\n    2: \"TLORA_V1\",\n    3: \"TLORA_V2_1_1.6\",\n    4: \"TBEAM\",\n    5: \"HELTEC_V2_0\",\n    6: \"TBEAM_V0.7\",\n    7: \"T_ECHO\",\n    8: \"TLORA_V1_1.3\",\n    9: \"RAK4631\",\n    10: \"HELTEC_V2_1\",\n    11: \"HELTEC_V1\",\n    12: \"LILYGO_TBEAM_S3_CORE\",\n    13: \"RAK11200\",\n    14: \"NANO_G1\",\n    15: \"TLORA_V2_1_1.8\",\n    16: \"TLORA_T3_S3\",\n    17: \"NANO_G1_EXPLORER\",\n    18: \"NANO_G2_ULTRA\",\n    19: \"LORA_TYPE\",\n    25: \"STATION_G1\",\n    26: \"RAK11310\",\n    32: \"LORA_RELAY_V1\",\n    33: \"NRF52840DK\",\n    34: \"PPR\",\n    35: \"GENIEBLOCKS\",\n    36: \"NRF52_UNKNOWN\",\n    37: \"PORTDUINO\",\n    38: \"ANDROID_SIM\",\n    39: \"DIY_V1\",\n    40: \"NRF52840_PCA10059\",\n    41: \"DR_DEV\",\n    42: \"M5STACK\",\n    43: \"HELTEC_V3\",\n    44: \"HELTEC_WSL_V3\",\n    45: \"BETAFPV_2400_TX\",\n    46: \"BETAFPV_900_NANO_TX\",\n    47: \"RPI_PICO\",\n    48: \"HELTEC_WIRELESS_TRACKER\",\n    49: \"HELTEC_WIRELESS_PAPER\",\n    50: \"T_DECK\",\n    51: \"T_WATCH_S3\",\n    52: \"PICOMPUTER_S3\",\n    53: \"HELTEC_HT62\",\n    54: \"EBYTE_ESP32_S3\",\n    255: \"PRIVATE_HW\"\n}\n\n// inject From names and hardware info\nif (nodeShortNames.hasOwnProperty(packet.fromHex)){\n    packet.fromShortName = nodeShortNames[packet.fromHex]\n} else {\n    packet.fromShortName = unknown\n}\n\nif (nodeShortNames.hasOwnProperty(packet.fromHex)) {\n    packet.fromShortName = nodeShortNames[packet.fromHex]\n} else {\n    packet.fromShortName = unknown\n}\n\nif (nodeLongNames.hasOwnProperty(packet.fromHex)) {\n    packet.fromLongName = nodeLongNames[packet.fromHex]\n} else {\n    packet.fromLongName = unknown\n}\n\nif (nodeHardware.hasOwnProperty(packet.fromHex)) {\n    packet.fromHardware = hardwareMap[nodeHardware[packet.fromHex]]\n} else {\n    packet.fromHardware = unknown\n}\n\n// handle messages to mesh\nif (packet.toHex === \"!ffffffff\") {\n    packet.toShortName = \"mesh\"\n    packet.toLongName = \"Mesh\"\n    packet.toHardware = \"MESH\"\n    return msg\n}\n\n// inject To names and hardware info\nif (nodeShortNames.hasOwnProperty(packet.toHex)) {\n    packet.toShortName = nodeShortNames[packet.toHex]\n    packet.toLongName = nodeLongNames[packet.toHex]\n    packet.toHardware = hardwareMap[nodeHardware[packet.toHex]]\n} else {\n    packet.toShortName = unknown\n    packet.toLongName = unknown\n    packet.toHardware = unknown\n}\n\nreturn msg;",
         "outputs": 1,
@@ -85,9 +176,9 @@
         ]
     },
     {
-        "id": "855fd449b14d6e09",
+        "id": "924bc7f0ad6b2b77",
         "type": "function",
-        "z": "a832ad4ec196570a",
+        "z": "32b8c82937896aec",
         "name": "Deduplicate Packets by Id",
         "func": "const packetIdCacheGloabalKey = 'packetIdCache'\nconst expirySeconds = 300;\nvar idCache = global.get(packetIdCacheGloabalKey)\n\nif (idCache === undefined) {\n    idCache = {}\n}\n\n// clean dead keys\nfor (var key in idCache) {\n    if (idCache[key] <= new Date().getTime()) {\n        delete idCache[key];\n    }\n};\n\nvar id = msg.payload.packet.id\n\nif (idCache[id]) {\n    // message is a duplicate, send to the duplicate output and exit\n    return [null, msg];\n}\n\nidCache[id] = new Date().getTime() + (expirySeconds * 1000)\n\nglobal.set(packetIdCacheGloabalKey, idCache);\n\nreturn [msg, null];",
         "outputs": 2,
@@ -99,7 +190,7 @@
         "y": 40,
         "wires": [
             [
-                "4c809ff0174c8ff0"
+                "b61b30ecea6313f5"
             ],
             []
         ],
@@ -110,51 +201,17 @@
         "icon": "node-red/split.svg"
     },
     {
-        "id": "1ed79fa8cae54ee4",
+        "id": "40a7c7010eafaf05",
         "type": "decode",
-        "z": "a832ad4ec196570a",
+        "z": "32b8c82937896aec",
         "name": "Decode",
         "x": 280,
         "y": 40,
         "wires": [
             [
-                "855fd449b14d6e09"
+                "924bc7f0ad6b2b77"
             ]
         ]
-    },
-    {
-        "id": "488eea8fa5ce8bcc",
-        "type": "debug",
-        "z": "a832ad4ec196570a",
-        "name": "debug 1",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 300,
-        "y": 140,
-        "wires": []
-    },
-    {
-        "id": "6eefeb1110ba7270",
-        "type": "mqtt out",
-        "z": "a832ad4ec196570a",
-        "name": "",
-        "topic": "",
-        "qos": "",
-        "retain": "",
-        "respTopic": "",
-        "contentType": "",
-        "userProps": "",
-        "correl": "",
-        "expiry": "",
-        "broker": "b6ad40d3.16ad28",
-        "x": 270,
-        "y": 100,
-        "wires": []
     },
     {
         "id": "420f8f88e8060b71",
@@ -188,240 +245,84 @@
         "sessionExpiry": ""
     },
     {
-        "id": "b6ad40d3.16ad28",
-        "type": "mqtt-broker",
-        "name": "",
-        "broker": "mqtt.meshtastic.org",
-        "port": "1883",
-        "clientid": "",
-        "autoConnect": true,
-        "usetls": false,
-        "compatmode": false,
-        "protocolVersion": "4",
-        "keepalive": "60",
-        "cleansession": true,
-        "autoUnsubscribe": true,
-        "birthTopic": "",
-        "birthQos": "0",
-        "birthPayload": "",
-        "birthMsg": {},
-        "closeTopic": "",
-        "closeQos": "0",
-        "closePayload": "",
-        "closeMsg": {},
-        "willTopic": "",
-        "willQos": "0",
-        "willPayload": "",
-        "willMsg": {},
-        "userProps": "",
-        "sessionExpiry": ""
-    },
-    {
-        "id": "f9e40322037c429a",
-        "type": "subflow",
-        "name": "Measurement: Position",
-        "info": "",
-        "category": "output",
-        "in": [
-            {
-                "x": 40,
-                "y": 40,
-                "wires": [
-                    {
-                        "id": "af1ead55008aa3a1"
-                    }
-                ]
-            }
-        ],
-        "out": [
-            {
-                "x": 500,
-                "y": 80,
-                "wires": [
-                    {
-                        "id": "af1ead55008aa3a1",
-                        "port": 0
-                    }
-                ]
-            }
-        ],
-        "env": [],
-        "meta": {},
-        "color": "#C0DEED",
-        "inputLabels": [
-            "Position"
-        ],
-        "outputLabels": [
-            "Position Measurement"
-        ],
-        "icon": "node-red-contrib-influxdb/influxdb.png"
-    },
-    {
-        "id": "af1ead55008aa3a1",
-        "type": "function",
-        "z": "f9e40322037c429a",
-        "name": "Generate Position Measurement",
-        "func": "var payload = msg.payload.packet.decoded.payload;\n\n// Check if altitude is less than or equal to -1000 or greater than or equal to 15000\nif (payload.altitude <= -1000 || payload.altitude >= 15000) {\n    payload.altitude = 0; // Set altitude to 0\n}\n\nvar out = [{\n    \"lat\": payload.latitudeI * 1e-7,\n    \"lon\": payload.longitudeI * 1e-7,\n    \"alt\": payload.altitude,\n    \"tm\": payload.time,\n    \"satsInView\": payload.satsInView,\n    \"groundSpeed\": payload.groundSpeed,\n    \"groundTrack\": payload.groundTrack,\n    \"pDOP\": payload.PDOP,\n},\n{\n    \"from\": msg.payload.packet.fromHex,\n    \"fromShortName\": msg.payload.packet.fromShortName,\n    \"fromLongName\": msg.payload.packet.fromLongName,\n    \"fromHardware\": msg.payload.packet.fromHardware,\n    \"to\": msg.payload.packet.toHex,\n    \"toShortName\": msg.payload.packet.toShortName,\n    \"toLongName\": msg.payload.packet.toLongName,\n    \"toHardware\": msg.payload.packet.toHardware,\n    \"channelId\": msg.payload.channelId,\n    \"gatewayId\": msg.payload.gatewayId\n}];\n\nmsg.payload = out;\n\nreturn msg;\n",
-        "outputs": 1,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 230,
-        "y": 40,
-        "wires": [
-            []
-        ],
-        "icon": "font-awesome/fa-location-arrow"
-    },
-    {
-        "id": "99f9cca4b6a6bf62",
-        "type": "influxdb out",
-        "z": "f9e40322037c429a",
-        "influxdb": "d96c8f45d69c34f7",
-        "name": "Write Position Measurement",
-        "measurement": "Position",
-        "precision": "",
-        "retentionPolicy": "",
-        "database": "database",
-        "precisionV18FluxV20": "ms",
-        "retentionPolicyV18Flux": "",
-        "org": "organisation",
-        "bucket": "bucket",
-        "x": 520,
-        "y": 40,
-        "wires": []
-    },
-    {
-        "id": "d96c8f45d69c34f7",
-        "type": "influxdb",
-        "hostname": "localhost",
-        "port": "8086",
-        "protocol": "http",
-        "database": "msh",
-        "name": "Local InfluxDB",
-        "usetls": false,
-        "tls": "",
-        "influxdbVersion": "1.x",
-        "url": "http://localhost:8086",
-        "timeout": "",
-        "rejectUnauthorized": true
-    },
-    {
-        "id": "ecb36bc1fcd98649",
+        "id": "c9b3c1fe17356870",
         "type": "tab",
         "label": "Meshtastic2skylines",
         "disabled": false,
-        "info": "Foward position data to skylines using data from mqtt broker.\n\nSet user mapping in toskylines function.",
+        "info": "Foward position data to skylines using data from mqtt broker.\n\nSet shortname to skylines tracking ID.",
         "env": []
     },
     {
-        "id": "d04b1b5e63f615ad",
-        "type": "debug",
-        "z": "ecb36bc1fcd98649",
-        "name": "Position",
-        "active": false,
-        "tosidebar": true,
-        "console": true,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 710,
-        "y": 400,
-        "wires": []
-    },
-    {
-        "id": "f0ad71d765c3d961",
-        "type": "subflow:f9e40322037c429a",
-        "z": "ecb36bc1fcd98649",
+        "id": "34b1c34ae6449e89",
+        "type": "subflow:32b8c82937896aec",
+        "z": "c9b3c1fe17356870",
         "name": "",
-        "x": 540,
-        "y": 340,
+        "x": 240,
+        "y": 380,
         "wires": [
             [
-                "99be639485cdacbd",
-                "705f9a6dea1ae991"
+                "2644d2bab56d1c23"
             ]
         ]
     },
     {
-        "id": "405510413bac8ae3",
-        "type": "subflow:a832ad4ec196570a",
-        "z": "ecb36bc1fcd98649",
-        "name": "",
-        "x": 330,
-        "y": 340,
+        "id": "2644d2bab56d1c23",
+        "type": "subflow:f586b449f49c3776",
+        "z": "c9b3c1fe17356870",
+        "name": "Measurement: Position",
+        "x": 470,
+        "y": 380,
         "wires": [
             [
-                "f0ad71d765c3d961"
+                "5ac26f1c39bd4226"
             ]
         ]
     },
     {
-        "id": "99be639485cdacbd",
+        "id": "5ac26f1c39bd4226",
         "type": "function",
-        "z": "ecb36bc1fcd98649",
+        "z": "c9b3c1fe17356870",
         "name": "filtercrap",
-        "func": "// Filter out invalid messages and add type to valid messages\nif (msg.payload && Array.isArray(msg.payload) && msg.payload.length > 0) {\n    var isValid = false;\n    var positionPayload = msg.payload.find(item => item.lat !== null && item.lat !== undefined);\n    \n    if (positionPayload) {\n        isValid = true;\n    }\n    \n    if (isValid) {\n        return msg;\n    }\n}\n\nreturn null; // Filter out invalid messages\n",
+        "func": "// Initialize an array to store non-null and non-NaN \"lat\" values\nlet validLatValues = [];\n\n// Check if \"payload\" exists and is an array\nif (msg.payload && Array.isArray(msg.payload)) {\n    // Filter out objects where \"lat\" value is neither null nor NaN\n    validLatValues = msg.payload.filter(function(item) {\n        return item.lat !== null && !isNaN(item.lat);\n    });\n\n    // If valid \"lat\" values are found, set payload to the original payload\n    if (validLatValues.length > 0) {\n        msg.payload = msg.payload;\n    } else {\n        // If no valid \"lat\" values found, set payload to null to discard the message\n        msg.payload = null;\n    }\n} else {\n    // If payload does not exist or is not an array, set it to null to discard the message\n    msg.payload = null;\n}\n\n// Output valid \"lat\" values to the debug console\nif (validLatValues.length > 0) {\n    let latValuesString = validLatValues.map(item => item.lat).join(\", \");\n    //node.warn(\"Valid 'lat' values found: \" + latValuesString);\n}\n\n// Return the modified message if payload is not null, otherwise return null to discard the message\nreturn msg.payload !== null ? msg : null;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 340,
-        "y": 400,
+        "x": 660,
+        "y": 380,
         "wires": [
             [
-                "d04b1b5e63f615ad",
-                "d33f8b0905712d76"
+                "5f3185f6563d3b35",
+                "b84a4b922acd4a1b"
             ]
         ]
     },
     {
-        "id": "705f9a6dea1ae991",
-        "type": "debug",
-        "z": "ecb36bc1fcd98649",
-        "name": "nofilter",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 730,
-        "y": 340,
-        "wires": []
-    },
-    {
-        "id": "d33f8b0905712d76",
+        "id": "b84a4b922acd4a1b",
         "type": "function",
-        "z": "ecb36bc1fcd98649",
+        "z": "c9b3c1fe17356870",
         "name": "toskylines",
-        "func": "// Define a configuration object mapping user IDs to session IDs\nvar userConfig = {\n    \"!XXXXXXXX\": \"XXXXXXXX\",\n    \"!XXXXXX\": \"XXXXXXXX\"\n};\n\n// JavaScript function to calculate session ID\nfunction generateSessionID(userID) {\n    // Convert hexadecimal user_id to integer\n    var user_id_int = parseInt(userID.substring(1), 16);\n\n    // Generate a random session ID with the last three bytes matching the user ID\n    var session_id = Math.floor(Math.random() * (Math.pow(2, 24) - 1)) | user_id_int;\n\n    return session_id.toString();\n}\n\n// Check if the incoming message has the \"from\" property\nif (msg.payload && Array.isArray(msg.payload) && msg.payload.length > 0 && msg.payload[1] && msg.payload[1].from) {\n    var fromUserID = msg.payload[1].from;\n\n    // Check if the fromUserID exists in userConfig\n    if (userConfig[fromUserID]) {\n        // Extract user data from userConfig\n        var user = userConfig[fromUserID];\n    } else {\n        // If fromUserID is not found in userConfig, set user to null\n        node.warn(\"User not mapped.\");\n        return null;\n    }\n\n    // Calculate the session ID for the user\n    var sid = generateSessionID(user);\n\n    // Extract other values from the payload\n    var lat = msg.payload[0].lat;\n    var lon = msg.payload[0].lon;\n    var alt = msg.payload[0].alt;\n    var tm = msg.payload[0].tm;\n    var sog = msg.payload[0].groundSpeed;\n\n    // Check if alt is NOT within the specified range (-1000 to 15000)\n    if (!(alt >= -1000 && alt <= 15000)) {\n        // If alt is NOT within the range, set it to 0\n        alt = 0;\n    }\n\n    // Prepare the data payload for the HTTP POST request\n    var postData = `leolive=1&user=${user}&lat=${lat}&lon=${lon}&sid=${sid}&password=123&sog=${sog}&alt=${alt}&tm=${tm}`;\n\n    // Set up the HTTP request parameters\n    msg.method = \"POST\";\n    msg.url = \"https://skylines.aero/track.php\";\n    msg.headers = {\n        'Content-Type': 'application/x-www-form-urlencoded',\n        'Content-Length': postData.length\n    };\n    msg.payload = postData;\n\n    return msg;\n} else {\n    // If \"from\" property is not present in the incoming message, return null\n    node.warn(\"Invalid or missing properties in the incoming message.\");\n    return null;\n}\n",
+        "func": "// JavaScript function to calculate session ID\nfunction generateSessionID(userID) {\n    // Convert hexadecimal user_id to integer\n    var user_id_int = parseInt(userID.substring(1), 16);\n\n    // Generate a random session ID with the last three bytes matching the user ID\n    var session_id = Math.floor(Math.random() * (Math.pow(2, 24) - 1)) | user_id_int;\n\n    return session_id.toString();\n}\n\n// Check if the incoming message has the \"fromShortName\" property\nif (msg.payload && Array.isArray(msg.payload) && msg.payload.length > 0 && msg.payload[1] && msg.payload[1].fromShortName) {\n    var fromShortName = msg.payload[1].fromShortName;\n\n    // Use fromShortName as user\n    var user = fromShortName;\n\n    // Calculate the session ID for the user\n    var sid = generateSessionID(user);\n\n    // Extract other values from the payload\n    var lat = msg.payload[0].lat;\n    var lon = msg.payload[0].lon;\n    var alt = msg.payload[0].alt;\n    var tm = msg.payload[0].tm;\n    var sog = msg.payload[0].groundSpeed;\n\n    // Check if alt is NOT within the specified range (-1000 to 15000)\n    if (!(alt >= -1000 && alt <= 15000)) {\n        // If alt is NOT within the range, set it to 0\n        alt = 0;\n    }\n\n    // Prepare the data payload for the HTTP POST request\n    var postData = `leolive=1&user=${user}&lat=${lat}&lon=${lon}&sid=${sid}&password=123&sog=${sog}&alt=${alt}&tm=${tm}`;\n\n    // Set up the HTTP request parameters\n    msg.method = \"POST\";\n    msg.url = \"https://skylines.aero/track.php\";\n    msg.headers = {\n        'Content-Type': 'application/x-www-form-urlencoded',\n        'Content-Length': postData.length\n    };\n    msg.payload = postData;\n\n    return msg;\n} else {\n    // If \"fromShortName\" property is not present in the incoming message, return null\n    node.warn(\"Invalid or missing properties in the incoming message.\");\n    return null;\n}\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 340,
-        "y": 460,
+        "x": 800,
+        "y": 380,
         "wires": [
             [
-                "bc39f26e202fc7fa"
+                "a3afd1d6f85a9f95"
             ]
         ]
     },
     {
-        "id": "bc39f26e202fc7fa",
+        "id": "a3afd1d6f85a9f95",
         "type": "http request",
-        "z": "ecb36bc1fcd98649",
+        "z": "c9b3c1fe17356870",
         "name": "",
         "method": "POST",
         "ret": "txt",
@@ -434,20 +335,20 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 510,
-        "y": 460,
+        "x": 950,
+        "y": 380,
         "wires": [
             [
-                "36dc08bee0501e7e"
+                "be54136af42fe255"
             ]
         ]
     },
     {
-        "id": "36dc08bee0501e7e",
+        "id": "be54136af42fe255",
         "type": "debug",
-        "z": "ecb36bc1fcd98649",
+        "z": "c9b3c1fe17356870",
         "name": "httpreq debug",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -455,30 +356,15 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 700,
-        "y": 460,
+        "x": 1120,
+        "y": 380,
         "wires": []
     },
     {
-        "id": "dbd8526ae63abc86",
-        "type": "catch",
-        "z": "ecb36bc1fcd98649",
-        "name": "",
-        "scope": null,
-        "uncaught": false,
-        "x": 300,
-        "y": 200,
-        "wires": [
-            [
-                "78b78f5ca6536d0c"
-            ]
-        ]
-    },
-    {
-        "id": "78b78f5ca6536d0c",
+        "id": "5f3185f6563d3b35",
         "type": "debug",
-        "z": "ecb36bc1fcd98649",
-        "name": "debug all",
+        "z": "c9b3c1fe17356870",
+        "name": "position",
         "active": false,
         "tosidebar": true,
         "console": false,
@@ -487,8 +373,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 480,
-        "y": 200,
+        "x": 760,
+        "y": 280,
         "wires": []
     }
 ]
