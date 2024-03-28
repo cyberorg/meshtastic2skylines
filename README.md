@@ -26,14 +26,7 @@ Debug nodes are included for debugging purposes. They can be activated or deacti
 
 ## Additional Information
 - **mqtt in and out**: Modify to point to your mqtt server in Ingest subflow. Disable link to mqtt out if you do not wish to forward to mqtt.meshtastic.org.
-- **Skylines Integration**: Ensure that the user mapping is correctly set in the "toskylines" function to map user IDs to session IDs for Skylines integration. Update the `userConfig` object with your own device IDs and Skylines tracking IDs.
-```javascript
-// Define a configuration object mapping user IDs to session IDs
-var userConfig = {
-    "!YOURDEVICE1": "SLTRACKINGID1",
-    "!YOURDEVICE2": "SLTRACKINGID2"
-};
-```
+- **Skylines Integration**: Add Skylines tracking ID as shortname to the device.
 
 For more information about Skylines, visit [Skylines GitHub Repository]([https://github.com/skylines/aero](https://github.com/skylines-project/skylines)).
 
