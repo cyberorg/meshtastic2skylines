@@ -72,9 +72,7 @@
         "x": 610,
         "y": 40,
         "wires": [
-            [
-                "8db3dc7dd51e87f9"
-            ]
+            []
         ]
     },
     {
@@ -149,9 +147,7 @@
         "x": 250,
         "y": 40,
         "wires": [
-            [
-                "619b3bb894dc9fc3"
-            ]
+            []
         ],
         "icon": "font-awesome/fa-thermometer-2"
     },
@@ -227,9 +223,7 @@
         "x": 230,
         "y": 40,
         "wires": [
-            [
-                "71f5af1d851420da"
-            ]
+            []
         ],
         "icon": "font-awesome/fa-power-off"
     },
@@ -640,7 +634,7 @@
         "id": "420f8f88e8060b71",
         "type": "mqtt-broker",
         "name": "",
-        "broker": "ws.cyberorg.co.in",
+        "broker": "mqtt.paraguide.in",
         "port": "1883",
         "clientid": "",
         "autoConnect": true,
@@ -1545,7 +1539,7 @@
         "type": "function",
         "z": "4348da314170486a",
         "name": "toskylines",
-        "func": "// JavaScript function to calculate session ID\nfunction generateSessionID(userID) {\n    // Generate a random session ID with the last three bytes matching the user ID\n    var session_id = Math.floor(Math.random() * (Math.pow(2, 24) - 1)) | userID;\n\n    return session_id.toString();\n}\n\n// Check if the incoming message has the \"fromLongName\" property\nif (msg.payload && Array.isArray(msg.payload) && msg.payload.length > 0 && msg.payload[1] && msg.payload[1].fromLongName) {\n    var fromLongName = msg.payload[1].fromLongName;\n\n    // Check if the fromLongName is in the specified format\n    if (!isValidLongNameFormat(fromLongName)) {\n        // If not in the specified format, return null to stop further processing\n        node.warn(\"Invalid format in fromLongName. Message discarded.\");\n        return null;\n    }\n\n    // Extract the user ID from the LongName\n    var parts = fromLongName.split('/');\n    var userID = parts[parts.length - 1];\n\n    // Calculate the session ID for the user\n    var sid = generateSessionID(parseInt(userID, 16));\n\n    // Extract other values from the payload\n    var lat = msg.payload[0].lat;\n    var lon = msg.payload[0].lon;\n    var alt = msg.payload[0].alt;\n    var tm = msg.payload[0].tm;\n    var sog = msg.payload[0].groundSpeed;\n\n    // Check if alt is NOT within the specified range (-1000 to 15000)\n    if (!(alt >= -1000 && alt <= 15000)) {\n        // If alt is NOT within the range, set it to 0\n        alt = 0;\n    }\n\n    // Prepare the data payload for the HTTP POST request\n    var postData = `leolive=1&user=${userID}&lat=${lat}&lon=${lon}&sid=${sid}&password=123&sog=${sog}&alt=${alt}&tm=${tm}`;\n\n    // Set up the HTTP request parameters\n    msg.method = \"POST\";\n    msg.url = \"https://skylines.aero/track.php\";\n    msg.headers = {\n        'Content-Type': 'application/x-www-form-urlencoded',\n        'Content-Length': postData.length\n    };\n    msg.payload = postData;\n\n    return msg;\n} else {\n    // If \"fromLongName\" property is not present in the incoming message, return null\n    node.warn(\"Invalid or missing properties in the incoming message.\");\n    return null;\n}\n\n// Function to check if the fromLongName follows the specified format\nfunction isValidLongNameFormat(longName) {\n    // Check if longName contains at least one slash\n    return longName.indexOf('/') !== -1;\n}\n",
+        "func": "// JavaScript function to calculate session ID\nfunction generateSessionID(userID) {\n    // Generate a random session ID with the last three bytes matching the user ID\n    var session_id = Math.floor(Math.random() * (Math.pow(2, 24) - 1)) | userID;\n\n    return session_id.toString();\n}\n\n// Check if the incoming message has the \"fromLongName\" property\nif (msg.payload && Array.isArray(msg.payload) && msg.payload.length > 0 && msg.payload[1] && msg.payload[1].fromLongName) {\n    var fromLongName = msg.payload[1].fromLongName;\n\n    // Check if the fromLongName is in the specified format\n    if (!isValidLongNameFormat(fromLongName)) {\n        // If not in the specified format, return null to stop further processing\n        //node.warn(\"Invalid format in fromLongName. Message discarded.\");\n        return null;\n    }\n\n    // Extract the user ID from the LongName\n    var parts = fromLongName.split('/');\n    var userID = parts[parts.length - 1];\n\n    // Calculate the session ID for the user\n    var sid = generateSessionID(parseInt(userID, 16));\n\n    // Extract other values from the payload\n    var lat = msg.payload[0].lat;\n    var lon = msg.payload[0].lon;\n    var alt = msg.payload[0].alt;\n    var tm = msg.payload[0].tm;\n    var sog = msg.payload[0].groundSpeed;\n\n    // Check if alt is NOT within the specified range (-1000 to 15000)\n    if (!(alt >= -1000 && alt <= 15000)) {\n        // If alt is NOT within the range, set it to 0\n        alt = 0;\n    }\n\n    // Prepare the data payload for the HTTP POST request\n    var postData = `leolive=1&user=${userID}&lat=${lat}&lon=${lon}&sid=${sid}&password=123&sog=${sog}&alt=${alt}&tm=${tm}`;\n\n    // Set up the HTTP request parameters\n    msg.method = \"POST\";\n    msg.url = \"https://skylines.aero/track.php\";\n    msg.headers = {\n        'Content-Type': 'application/x-www-form-urlencoded',\n        'Content-Length': postData.length\n    };\n    msg.payload = postData;\n\n    return msg;\n} else {\n    // If \"fromLongName\" property is not present in the incoming message, return null\n    node.warn(\"Invalid or missing properties in the incoming message.\");\n    return null;\n}\n\n// Function to check if the fromLongName follows the specified format\nfunction isValidLongNameFormat(longName) {\n    // Check if longName contains at least one slash\n    return longName.indexOf('/') !== -1;\n}\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
