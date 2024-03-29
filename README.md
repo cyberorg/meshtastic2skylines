@@ -26,7 +26,8 @@ Debug nodes are included for debugging purposes. They can be activated or deacti
 
 ## Additional Information
 - **mqtt in and out**: Modify to point to your mqtt server in Ingest subflow. Disable link to mqtt out if you do not wish to forward to mqtt.meshtastic.org.
-- **Skylines Integration**: Add Skylines tracking ID as shortname to the device.
+- **Skylines Integration**: Add Skylines tracking ID as LongName to the device.
+- **Telegram Integration**: Use anything that can identify as you in ShortName.
 
 For more information about Skylines, visit [Skylines GitHub Repository]([https://github.com/skylines/aero](https://github.com/skylines-project/skylines)).
 
