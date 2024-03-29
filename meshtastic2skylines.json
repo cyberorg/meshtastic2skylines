@@ -1637,7 +1637,7 @@
         "type": "function",
         "z": "4348da314170486a",
         "name": "telegramit",
-        "func": "const packet = msg.payload.packet;\nconst messageContent = packet.decoded.payload; // Message content\nconst fromLongName = packet.fromLongName; // Extracting fromLongName\n\n// Constructing the message content with fromLongName\nconst content = `${messageContent} from ${fromLongName}`;\n\n// Forming the message object for the Telegram sender\nconst telegramMsg = {\n    chatId: -1002032937783, // Assuming this is your chat ID\n    type: 'message',\n    content: content,\n    options: {\n        message_thread_id: 22\n    }\n};\n\n// Set the formatted message as the new payload\nmsg.payload = telegramMsg;\n\n// Return the modified message\nreturn msg;\n",
+        "func": "const packet = msg.payload.packet;\nconst messageContent = packet.decoded.payload; // Message content\nconst fromLongName = packet.fromLongName; // Extracting fromLongName\n\n// Extracting user ID from fromLongName\nconst userID = fromLongName.substring(0, fromLongName.lastIndexOf('/'));\n\n// Constructing the message content with fromLongName\nconst content = `${messageContent} from ${userID}`;\n\n// Forming the message object for the Telegram sender\nconst telegramMsg = {\n    chatId: -1002032937783, // Assuming this is your chat ID\n    type: 'message',\n    content: content,\n    options: {\n        message_thread_id: 22\n    }\n};\n\n// Set the formatted message as the new payload\nmsg.payload = telegramMsg;\n\n// Return the modified message\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
