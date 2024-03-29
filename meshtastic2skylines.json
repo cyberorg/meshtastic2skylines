@@ -2,7 +2,7 @@
     {
         "id": "f586b449f49c3776",
         "type": "subflow",
-        "name": "Meshtastic2skylines: Position",
+        "name": "Measurement: Position (2)",
         "info": "",
         "category": "output",
         "in": [
@@ -94,7 +94,7 @@
     {
         "id": "32b8c82937896aec",
         "type": "subflow",
-        "name": "Ingest from MQTT",
+        "name": "Ingest from MQTT (2)",
         "info": "",
         "category": "input",
         "in": [],
@@ -154,7 +154,8 @@
         "y": 40,
         "wires": [
             [
-                "40a7c7010eafaf05"
+                "40a7c7010eafaf05",
+                "bf54293f65799f07"
             ]
         ]
     },
@@ -214,10 +215,28 @@
         ]
     },
     {
+        "id": "bf54293f65799f07",
+        "type": "mqtt out",
+        "z": "32b8c82937896aec",
+        "name": "",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "b6ad40d3.16ad28",
+        "x": 270,
+        "y": 120,
+        "wires": []
+    },
+    {
         "id": "420f8f88e8060b71",
         "type": "mqtt-broker",
         "name": "",
-        "broker": "",
+        "broker": "ws.cyberorg.co.in",
         "port": "1883",
         "clientid": "",
         "autoConnect": true,
@@ -245,6 +264,35 @@
         "sessionExpiry": ""
     },
     {
+        "id": "b6ad40d3.16ad28",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "mqtt.meshtastic.org",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "compatmode": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
         "id": "c9b3c1fe17356870",
         "type": "tab",
         "label": "Meshtastic2skylines",
@@ -257,11 +305,11 @@
         "type": "subflow:32b8c82937896aec",
         "z": "c9b3c1fe17356870",
         "name": "",
-        "x": 240,
+        "x": 120,
         "y": 380,
         "wires": [
             [
-                "2644d2bab56d1c23"
+                "3f9fb4fbd8b76478"
             ]
         ]
     },
@@ -270,8 +318,8 @@
         "type": "subflow:f586b449f49c3776",
         "z": "c9b3c1fe17356870",
         "name": "Measurement: Position",
-        "x": 470,
-        "y": 380,
+        "x": 560,
+        "y": 320,
         "wires": [
             [
                 "5ac26f1c39bd4226"
@@ -290,8 +338,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 660,
-        "y": 380,
+        "x": 750,
+        "y": 320,
         "wires": [
             [
                 "5f3185f6563d3b35",
@@ -311,8 +359,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 800,
-        "y": 380,
+        "x": 890,
+        "y": 320,
         "wires": [
             [
                 "a3afd1d6f85a9f95"
@@ -335,8 +383,8 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 950,
-        "y": 380,
+        "x": 1040,
+        "y": 320,
         "wires": [
             [
                 "be54136af42fe255"
@@ -356,8 +404,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1120,
-        "y": 380,
+        "x": 1200,
+        "y": 320,
         "wires": []
     },
     {
@@ -373,8 +421,257 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 760,
-        "y": 280,
+        "x": 920,
+        "y": 260,
         "wires": []
+    },
+    {
+        "id": "20d140884fc2fa46",
+        "type": "function",
+        "z": "c9b3c1fe17356870",
+        "name": "telegramit",
+        "func": "const packet = msg.payload.packet;\nconst messageContent = packet.decoded.payload; // Message content\nconst fromLongName = packet.fromLongName; // Extracting fromLongName\n\n// Constructing the message content with fromLongName\nconst content = `${messageContent} from ${fromLongName}`;\n\n// Forming the message object for the Telegram sender\nconst telegramMsg = {\n    chatId: -1002032937783, // Assuming this is your chat ID\n    type: 'message',\n    content: content,\n    options: {\n        message_thread_id: 22\n    }\n};\n\n// Set the formatted message as the new payload\nmsg.payload = telegramMsg;\n\n// Return the modified message\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 240,
+        "wires": [
+            [
+                "6f3dbaa56e4496cc"
+            ]
+        ]
+    },
+    {
+        "id": "6f3dbaa56e4496cc",
+        "type": "telegram sender",
+        "z": "c9b3c1fe17356870",
+        "name": "",
+        "bot": "147161f8fdf03562",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 670,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3f9fb4fbd8b76478",
+        "type": "switch",
+        "z": "c9b3c1fe17356870",
+        "name": "Split by PortNum",
+        "property": "payload.packet.decoded.portnum",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "2",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "3",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "4",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "5",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "6",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "7",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "8",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "9",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "10",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "32",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "33",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "64",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "65",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "66",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "67",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "68",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "69",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "70",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "71",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "256",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "257",
+                "vt": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 24,
+        "x": 330,
+        "y": 380,
+        "wires": [
+            [],
+            [
+                "20d140884fc2fa46"
+            ],
+            [],
+            [
+                "2644d2bab56d1c23"
+            ],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            []
+        ],
+        "outputLabels": [
+            "Unknown",
+            "Text Message",
+            "Remote Hardware",
+            "Position",
+            "Node Info",
+            "Routing",
+            "Admin",
+            "Compressed (Canned) Text Message",
+            "Waypoint",
+            "Audio",
+            "Detection Sensor",
+            "Reply",
+            "IP Tunnel",
+            "Serial",
+            "Store-Forward",
+            "Range Test",
+            "Telemetry",
+            "Zero-GPS Positioning System",
+            "Simulator",
+            "Trace Route",
+            "Neighbor Info",
+            "Private",
+            "ATAK Forwarder",
+            "Unmatched Port Number"
+        ],
+        "icon": "font-awesome/fa-inbox"
+    },
+    {
+        "id": "147161f8fdf03562",
+        "type": "telegram bot",
+        "botname": "ptrackerin_bot",
+        "usernames": "",
+        "chatids": "",
+        "baseapiurl": "",
+        "updatemode": "polling",
+        "pollinterval": "300",
+        "usesocks": false,
+        "sockshost": "",
+        "socksprotocol": "socks5",
+        "socksport": "6667",
+        "socksusername": "anonymous",
+        "sockspassword": "",
+        "bothost": "",
+        "botpath": "",
+        "localbotport": "8443",
+        "publicbotport": "8443",
+        "privatekey": "",
+        "certificate": "",
+        "useselfsignedcertificate": false,
+        "sslterminated": false,
+        "verboselogging": false
     }
 ]
