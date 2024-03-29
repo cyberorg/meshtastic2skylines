@@ -26,8 +26,8 @@ Debug nodes are included for debugging purposes. They can be activated or deacti
 
 ## Additional Information
 - **mqtt in and out**: Modify to point to your mqtt server in Ingest subflow. Disable link to mqtt out if you do not wish to forward to mqtt.meshtastic.org.
-- **Skylines Integration**: Add Skylines tracking ID as LongName to the device.
-- **Telegram Integration**: Use anything that can identify as you in ShortName.
+- **Skylines Integration**: Add your skylines tracking ID in LongName after "/" e.g. "Paraguide IN/XXXXXXXX". Add your skylines details to [https://flyxc.app](https://flyxc.app)(optional on [https://puretrack.io](https://puretrack.io)), your device will show up on the map there.
+- **Telegram Integration**: Messages are forwarded to telegram group topic [https://t.me/meshtastic_india/22/](https://t.me/meshtastic_india/22/).
 
 For more information about Skylines, visit [Skylines GitHub Repository]([https://github.com/skylines/aero](https://github.com/skylines-project/skylines)).
 
